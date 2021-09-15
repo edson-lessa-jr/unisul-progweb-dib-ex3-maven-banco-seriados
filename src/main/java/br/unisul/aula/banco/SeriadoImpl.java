@@ -17,12 +17,22 @@ public class SeriadoImpl implements CrudDoBanco<Seriado>{
 
     @Override
     public void remove(Seriado seriado) {
-
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        entityManager.getTransaction().begin();
+        entityManager.remove(entityManager.getReference(Seriado.class, seriado.getId()));
+        entityManager.getTransaction().commit();
     }
 
     @Override
     public void update(Seriado seriado) {
-
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        entityManager.getTransaction().begin();
+        Seriado seriadoEncontrado = findById(seriado.getId());
+        seriadoEncontrado.setNome(seriado.getNome());
+        seriadoEncontrado.setDescricao(seriado.getDescricao());
+        seriadoEncontrado.setDataLancamento(seriadoEncontrado.getDataLancamento());
+        entityManager.merge(seriadoEncontrado);
+        entityManager.getTransaction().commit();
     }
 
     @Override
@@ -33,6 +43,7 @@ public class SeriadoImpl implements CrudDoBanco<Seriado>{
 
     @Override
     public Seriado findById(Long id) {
-        return null;
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        return entityManager.find(Seriado.class, id);
     }
 }
