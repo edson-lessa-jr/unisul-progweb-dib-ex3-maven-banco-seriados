@@ -28,9 +28,11 @@ public class SeriadoImpl implements CrudDoBanco<Seriado>{
         EntityManager entityManager = JPAUtil.getEntityManager();
         entityManager.getTransaction().begin();
         Seriado seriadoEncontrado = findById(seriado.getId());
+
         seriadoEncontrado.setNome(seriado.getNome());
         seriadoEncontrado.setDescricao(seriado.getDescricao());
         seriadoEncontrado.setDataLancamento(seriadoEncontrado.getDataLancamento());
+
         entityManager.merge(seriadoEncontrado);
         entityManager.getTransaction().commit();
     }

@@ -1,9 +1,12 @@
 package br.unisul.aula;
 
 import br.unisul.aula.banco.CrudDoBanco;
+import br.unisul.aula.banco.EpisodioImpl;
 import br.unisul.aula.banco.SeriadoImpl;
+import br.unisul.aula.banco.TemporadaImpl;
+import br.unisul.aula.entidades.Episodio;
 import br.unisul.aula.entidades.Seriado;
-import javafx.util.converter.LocalDateStringConverter;
+import br.unisul.aula.entidades.Temporada;
 
 import java.time.LocalDate;
 
@@ -14,16 +17,36 @@ public class App {
         seriado.setNome("Teste1");
         seriado.setDescricao("Teste1");
         seriado.setDataLancamento(LocalDate.now());
-        CrudDoBanco<Seriado> banco = new SeriadoImpl();
-        banco.insert(seriado);
-        System.out.println(banco.findAll());
-        Seriado seriado1 = banco.findById(new Long(1));
+        CrudDoBanco<Seriado> seriadoBanco = new SeriadoImpl();
+        seriadoBanco.insert(seriado);
+        Temporada temporada = new Temporada();
+        temporada.setNumero(1);
+        temporada.setDescricao("Teste");
+        temporada.setSeriado(seriado);
+        CrudDoBanco<Temporada> temporadaBanco = new TemporadaImpl();
+        temporadaBanco.insert(temporada);
+        System.out.println(temporadaBanco.findAll());
+
+        Episodio episodio = new Episodio();
+        episodio.setNumero(1);
+        episodio.setResumo("Teste teste");
+        episodio.setNome("Teste");
+        episodio.setTemporada(temporada);
+
+        CrudDoBanco<Episodio> episodioDoBanco = new EpisodioImpl();
+        episodioDoBanco.insert(episodio);
+
+
+        System.out.println(episodioDoBanco.findAll());
+
+        System.out.println(seriadoBanco.findAll());
+        Seriado seriado1 = seriadoBanco.findById(new Long(2));
         System.out.println(seriado1);
         seriado1.setDescricao("Novo teste");
-        banco.update(seriado1);
-        System.out.println(banco.findAll());
-        banco.remove(seriado1);
-        System.out.println(banco.findAll());
+        seriadoBanco.update(seriado1);
+        System.out.println(seriadoBanco.findAll());
+        seriadoBanco.remove(seriado1);
+        System.out.println(seriadoBanco.findAll());
 
 
 

@@ -1,12 +1,21 @@
 package br.unisul.aula.entidades;
 
-public class Episodio {
+import javax.persistence.*;
 
+@Entity
+@Table(name = "tb_episodio")
+public class Episodio {
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
+    @Column(nullable = false)
     private int numero;
+    @Column(nullable = false)
     private String nome;
     private String resumo;
 
+    @ManyToOne
+    @JoinColumn(name = "temporada_id", nullable = false)
     private Temporada temporada;
 
     public Episodio() {
@@ -50,5 +59,16 @@ public class Episodio {
 
     public void setTemporada(Temporada temporada) {
         this.temporada = temporada;
+    }
+
+    @Override
+    public String toString() {
+        return "Episodio{" +
+                "id=" + id +
+                ", numero=" + numero +
+                ", nome='" + nome + '\'' +
+                ", resumo='" + resumo + '\'' +
+                ", temporada=" + temporada +
+                '}';
     }
 }
