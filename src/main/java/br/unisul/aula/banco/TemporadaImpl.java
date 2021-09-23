@@ -4,6 +4,7 @@ import br.unisul.aula.entidades.Temporada;
 import br.unisul.aula.entidades.Temporada;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class TemporadaImpl implements CrudDoBanco<Temporada>{
@@ -47,4 +48,18 @@ public class TemporadaImpl implements CrudDoBanco<Temporada>{
         EntityManager entityManager = JPAUtil.getEntityManager();
         return entityManager.find(Temporada.class, id);
     }
+
+    public Temporada buscaPorNumeroESeriado(Integer numero, String nome){
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        TypedQuery<Temporada> query = entityManager
+                .createQuery("SELECT t FROM Temporada t where t.numero=:numero and t.seriado.nome=:nome"
+                        , Temporada.class);
+        Temporada temporada = query
+                .setParameter("numero", numero)
+                .setParameter("nome", nome)
+                .getSingleResult();
+        return temporada;
+
+    }
+
 }

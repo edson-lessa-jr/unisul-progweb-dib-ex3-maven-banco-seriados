@@ -9,9 +9,11 @@ import com.google.gson.Gson;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @WebServlet(name = "SeriadoServlet", value = "/seriado")
 public class SeriadoServlet extends HttpServlet {
@@ -37,6 +39,11 @@ public class SeriadoServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        BufferedReader reader = request.getReader();
+        Gson gson = new Gson();
+        SeriadoDTO seriadoDTO = gson.fromJson(reader, SeriadoDTO.class );
+        Seriado seriado = seriadoDTO.converterParaSeriado();
+        CrudDoBanco<Seriado> banco = new SeriadoImpl();
+        banco.insert(seriado);
     }
 }

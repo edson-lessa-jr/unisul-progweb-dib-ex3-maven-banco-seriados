@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class SeriadoDTO {
+    public static final DateTimeFormatter FORMATO = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private Long id;
     private String nome;
     private String dataLancamento;
@@ -20,8 +21,11 @@ public class SeriadoDTO {
     }
 
     private String converterLocalDate(LocalDate dataLancamento) {
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return dataLancamento.format(formato);
+        return dataLancamento.format(FORMATO);
+    }
+
+    private LocalDate converterStringParaLocalDate(String dataLancamento) {
+        return LocalDate.parse(dataLancamento,FORMATO);
     }
 
     public Long getId() {
@@ -47,5 +51,23 @@ public class SeriadoDTO {
 
     public void setDataLancamento(String dataLancamento) {
         this.dataLancamento = dataLancamento;
+    }
+
+    @Override
+    public String toString() {
+        return "SeriadoDTO\n" +
+                "id= " + id +
+                ", nome=" + nome +
+                ", dataLancamento=" + dataLancamento;
+    }
+
+    public Seriado converterParaSeriado() {
+        Seriado seriado = new Seriado();
+         seriado.setNome(this.nome);
+         LocalDate data = this.converterStringParaLocalDate(this.dataLancamento);
+         seriado.setDataLancamento(data);
+
+        return seriado;
+
     }
 }
