@@ -14,14 +14,14 @@ public class TemporadaImpl implements CrudDoBanco<Temporada>{
         entityManager.getTransaction().begin();
         entityManager.persist(temporada);
         entityManager.getTransaction().commit();
-
     }
 
     @Override
-    public void remove(Temporada temporada) {
+    public void remove(Long id) {
         EntityManager entityManager = JPAUtil.getEntityManager();
         entityManager.getTransaction().begin();
-        entityManager.remove(entityManager.getReference(Temporada.class, temporada.getId()));
+        Temporada temporada = this.findById(id);
+        entityManager.remove(entityManager.contains(temporada)? temporada:entityManager.merge(temporada));
         entityManager.getTransaction().commit();
     }
 
@@ -29,24 +29,38 @@ public class TemporadaImpl implements CrudDoBanco<Temporada>{
     public void update(Temporada temporada) {
         EntityManager entityManager = JPAUtil.getEntityManager();
         entityManager.getTransaction().begin();
-        Temporada temporadaEncontrado = findById(temporada.getId());
-        temporadaEncontrado.setNumero(temporada.getNumero());
-        temporadaEncontrado.setDescricao(temporada.getDescricao());
-        temporadaEncontrado.setSeriado(temporada.getSeriado());
-        entityManager.merge(temporadaEncontrado);
+        entityManager.merge(temporada);
         entityManager.getTransaction().commit();
     }
 
     @Override
     public List<Temporada> findAll() {
         EntityManager entityManager = JPAUtil.getEntityManager();
-        return entityManager.createQuery("SELECT t FROM Temporada t", Temporada.class).getResultList();
+
+        return entityManager
+                .createQuery("SELECT t FROM Temporada t", Temporada.class)
+                .getResultList();
     }
 
     @Override
     public Temporada findById(Long id) {
         EntityManager entityManager = JPAUtil.getEntityManager();
-        return entityManager.find(Temporada.class, id);
+        TypedQuery<Temporada> query = entityManager
+                .createQuery("SELECT t FROM Temporada t where t.id=:id",
+                        Temporada.class);
+        Temporada temporada = query.setParameter("id", id).getSingleResult();
+        System.out.println(temporada);
+        return temporada;
+    }
+
+    public Temporada buscaPorNumeroESeriado(Integer numero, Long idSeriado){
+        EntityManager entityManager = JPAUtil.getEntityManager();
+        TypedQuery<Temporada> query = entityManager
+                .createQuery("SELECT t FROM Temporada t where t.numero=:numero and t.seriado.id=:seriado",
+                        Temporada.class);
+        Temporada temporada = query.setParameter("numero", numero)
+                .setParameter("seriado", idSeriado).getSingleResult();
+        return temporada;
     }
 
     public Temporada buscaPorNumeroESeriado(Integer numero, String nome){

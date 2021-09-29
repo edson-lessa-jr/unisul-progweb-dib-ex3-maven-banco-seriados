@@ -17,20 +17,20 @@ import java.util.stream.Collectors;
 
 @WebServlet(name = "SeriadoServlet", value = "/seriado")
 public class SeriadoServlet extends HttpServlet {
+    private final Gson gson = new Gson();
+    private final CrudDoBanco<Seriado> banco = new SeriadoImpl();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        CrudDoBanco<Seriado> banco = new SeriadoImpl();
         List<Seriado> seriadoList = banco.findAll();
 
         // CONVERSÃO PARA DTO
         List<SeriadoDTO> seriadoDTOS = new ArrayList<>();
-        for (Seriado seriado: seriadoList){
+        for (Seriado seriado : seriadoList) {
             SeriadoDTO dto = new SeriadoDTO(seriado);
             seriadoDTOS.add(dto);
         }
 
 
-        Gson gson = new Gson();
         String seriadoJson = gson.toJson(seriadoDTOS);
 
         response.setContentType("application/json; charset=utf-8");
@@ -40,10 +40,24 @@ public class SeriadoServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BufferedReader reader = request.getReader();
-        Gson gson = new Gson();
-        SeriadoDTO seriadoDTO = gson.fromJson(reader, SeriadoDTO.class );
+        SeriadoDTO seriadoDTO = gson.fromJson(reader, SeriadoDTO.class);
         Seriado seriado = seriadoDTO.converterParaSeriado();
-        CrudDoBanco<Seriado> banco = new SeriadoImpl();
         banco.insert(seriado);
     }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BufferedReader reader = request.getReader();
+        SeriadoDTO seriadoDTO = gson.fromJson(reader, SeriadoDTO.class);
+        Seriado seriado = seriadoDTO.converterParaSeriado();
+        banco.update(seriado);
+
+    }
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BufferedReader reader = request.getReader();
+        SeriadoDTO seriadoDTO = gson.fromJson(reader, SeriadoDTO.class);
+        banco.remove(seriadoDTO.getId());
+    }
+
 }

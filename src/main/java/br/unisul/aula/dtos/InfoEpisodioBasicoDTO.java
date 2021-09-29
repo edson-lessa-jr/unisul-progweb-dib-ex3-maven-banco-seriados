@@ -1,7 +1,6 @@
 package br.unisul.aula.dtos;
 
 import br.unisul.aula.entidades.Episodio;
-import br.unisul.aula.entidades.Seriado;
 import br.unisul.aula.entidades.Temporada;
 
 public class InfoEpisodioBasicoDTO {

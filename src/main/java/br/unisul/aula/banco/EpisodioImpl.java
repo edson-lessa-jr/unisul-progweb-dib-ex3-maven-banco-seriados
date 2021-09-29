@@ -12,14 +12,14 @@ public class EpisodioImpl implements CrudDoBanco<Episodio>{
         entityManager.getTransaction().begin();
         entityManager.persist(episodio);
         entityManager.getTransaction().commit();
-
     }
 
     @Override
-    public void remove(Episodio episodio) {
+    public void remove(Long id) {
         EntityManager entityManager = JPAUtil.getEntityManager();
         entityManager.getTransaction().begin();
-        entityManager.remove(entityManager.getReference(Episodio.class, episodio.getId()));
+        Episodio episodio = findById(id);
+        entityManager.remove(episodio);
         entityManager.getTransaction().commit();
     }
 
@@ -27,24 +27,22 @@ public class EpisodioImpl implements CrudDoBanco<Episodio>{
     public void update(Episodio episodio) {
         EntityManager entityManager = JPAUtil.getEntityManager();
         entityManager.getTransaction().begin();
-        Episodio episodioEncontrado = findById(episodio.getId());
-        episodioEncontrado.setNumero(episodio.getNumero());
-        episodioEncontrado.setResumo(episodio.getResumo());
-        episodioEncontrado.setNome(episodio.getNome());
-        episodioEncontrado.setTemporada(episodio.getTemporada());
-        entityManager.merge(episodioEncontrado);
+        entityManager.merge(episodio);
         entityManager.getTransaction().commit();
     }
 
     @Override
     public List<Episodio> findAll() {
         EntityManager entityManager = JPAUtil.getEntityManager();
-        return entityManager.createQuery("SELECT t FROM Episodio t", Episodio.class).getResultList();
+
+        return entityManager
+                .createQuery("SELECT e FROM Episodio e", Episodio.class)
+                .getResultList();
     }
 
     @Override
     public Episodio findById(Long id) {
         EntityManager entityManager = JPAUtil.getEntityManager();
-        return entityManager.find(Episodio.class, id);
+        return entityManager.getReference(Episodio.class, id);
     }
 }

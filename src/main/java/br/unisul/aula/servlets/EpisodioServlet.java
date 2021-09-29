@@ -3,6 +3,7 @@ package br.unisul.aula.servlets;
 import br.unisul.aula.banco.CrudDoBanco;
 import br.unisul.aula.banco.EpisodioImpl;
 import br.unisul.aula.banco.TemporadaImpl;
+import br.unisul.aula.dtos.EpisodioDTO;
 import br.unisul.aula.dtos.InfoEpisodioBasicoDTO;
 import br.unisul.aula.entidades.Episodio;
 import br.unisul.aula.entidades.Temporada;
@@ -18,9 +19,11 @@ import java.util.List;
 
 @WebServlet(name = "EpisodioServlet", value = "/episodio")
 public class EpisodioServlet extends HttpServlet {
+
+    private final Gson gson = new Gson();
+    private final CrudDoBanco<Episodio> banco = new EpisodioImpl();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        CrudDoBanco<Episodio> banco = new EpisodioImpl();
         List<Episodio> episodioList = banco.findAll();
         List<InfoEpisodioBasicoDTO> dtos = new ArrayList<>();
 
@@ -38,13 +41,27 @@ public class EpisodioServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         BufferedReader reader = request.getReader();
-        Gson gson = new Gson();
         InfoEpisodioBasicoDTO dto = gson.fromJson(reader, InfoEpisodioBasicoDTO.class);
         CrudDoBanco<Temporada> bancoT = new TemporadaImpl();
         Temporada temporada = ((TemporadaImpl) bancoT)
                 .buscaPorNumeroESeriado(dto.getNumeroTemporada(), dto.getNomeSeriado());
         Episodio episodio = dto.converterParaEpisodio(temporada);
-        CrudDoBanco<Episodio> banco = new EpisodioImpl();
         banco.insert(episodio);
+    }
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BufferedReader reader = request.getReader();
+        EpisodioDTO episodioDTO= gson.fromJson(reader, EpisodioDTO.class);
+        CrudDoBanco<Temporada> temporadaBanco = new TemporadaImpl();
+        Temporada temporada = ((TemporadaImpl) temporadaBanco).buscaPorNumeroESeriado(episodioDTO.getNumeroTemporada(), episodioDTO.getSeriadoId());
+        Episodio episodio = episodioDTO.converterParaEpisodio(temporada);
+        banco.update(episodio);
+
+    }
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BufferedReader reader = request.getReader();
+        EpisodioDTO episodioDTO = gson.fromJson(reader, EpisodioDTO.class);
+        banco.remove(episodioDTO.getIdEpisodio());
     }
 }

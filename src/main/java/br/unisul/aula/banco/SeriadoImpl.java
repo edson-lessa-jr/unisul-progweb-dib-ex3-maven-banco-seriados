@@ -3,6 +3,7 @@ package br.unisul.aula.banco;
 import br.unisul.aula.entidades.Seriado;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class SeriadoImpl implements CrudDoBanco<Seriado>{
@@ -12,14 +13,14 @@ public class SeriadoImpl implements CrudDoBanco<Seriado>{
         entityManager.getTransaction().begin();
         entityManager.persist(seriado);
         entityManager.getTransaction().commit();
-
     }
 
     @Override
-    public void remove(Seriado seriado) {
+    public void remove(Long id) {
         EntityManager entityManager = JPAUtil.getEntityManager();
         entityManager.getTransaction().begin();
-        entityManager.remove(entityManager.getReference(Seriado.class, seriado.getId()));
+        Seriado seriado = findById(id);
+        entityManager.remove(seriado);
         entityManager.getTransaction().commit();
     }
 
@@ -27,25 +28,24 @@ public class SeriadoImpl implements CrudDoBanco<Seriado>{
     public void update(Seriado seriado) {
         EntityManager entityManager = JPAUtil.getEntityManager();
         entityManager.getTransaction().begin();
-        Seriado seriadoEncontrado = findById(seriado.getId());
-
-        seriadoEncontrado.setNome(seriado.getNome());
-        seriadoEncontrado.setDescricao(seriado.getDescricao());
-        seriadoEncontrado.setDataLancamento(seriadoEncontrado.getDataLancamento());
-
-        entityManager.merge(seriadoEncontrado);
+        entityManager.merge(seriado);
         entityManager.getTransaction().commit();
     }
 
     @Override
     public List<Seriado> findAll() {
         EntityManager entityManager = JPAUtil.getEntityManager();
-        return entityManager.createQuery("SELECT s FROM Seriado s", Seriado.class).getResultList();
+
+        return entityManager
+                .createQuery("SELECT s FROM Seriado s", Seriado.class)
+                .getResultList();
     }
 
     @Override
     public Seriado findById(Long id) {
         EntityManager entityManager = JPAUtil.getEntityManager();
-        return entityManager.find(Seriado.class, id);
+        TypedQuery<Seriado> query = entityManager
+                .createQuery("SELECT s FROM Seriado s where s.id =:id", Seriado.class);
+        return query.setParameter("id", id).getSingleResult();
     }
 }
